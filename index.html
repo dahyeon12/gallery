@@ -82,6 +82,7 @@ h1{font-size:26px;font-weight:700;margin:0;letter-spacing:-.02em}
 .menu button:hover,.menu button:focus-visible{background:rgba(127,127,127,.14);outline:0}
 .menu hr{border:0;border-top:1px solid var(--menu-line);margin:8px 12px}
 .menu .red{color:var(--danger)}
+.menu .mempty{font-size:15px;color:var(--muted);padding:7px 16px}
 .menu .newrow{display:flex;gap:6px;padding:4px 12px 6px}
 .menu .newrow input{flex:1;min-width:0;font:inherit;font-size:15px;padding:7px 10px;border-radius:10px;border:1px solid var(--menu-line);background:var(--bg);color:var(--fg)}
 .menu .newrow button{width:auto;font-size:15px;padding:7px 12px;border-radius:10px;background:var(--accent);color:#fff}
@@ -293,7 +294,9 @@ function addGroupTo(key, name){
 function openMenu(anchor, key, current){
   const menu=$('menu'); menu.innerHTML='';
   const head=el('div','mh',ICON_CLOCK); head.setAttribute('aria-label','최근 앨범'); head.title='최근 앨범'; menu.append(head);
-  const names=[...new Set([current,...recentAlbums,...photos.filter(p=>p.classified).map(p=>p.cat)])].slice(0,3);
+  // 최근에 사진을 추가한 앨범만, 가장 최근 순서로 3개까지
+  const names=recentAlbums.filter(n=>photos.some(p=>p.album===n)).slice(0,3);
+  if(!names.length) menu.append(el('div','mempty','최근에 추가한 앨범이 없어요'));
   names.forEach(n=>{const b=el('button'); b.setAttribute('role','menuitem'); b.textContent='‘'+n+'’에 추가'; b.onclick=e=>{e.stopPropagation(); addGroupTo(key,n)}; menu.append(b)});
   menu.append(el('hr'));
   const all=el('button',null,'앨범에 추가'); all.setAttribute('role','menuitem'); all.onclick=e=>{e.stopPropagation(); albumPicker(key)}; menu.append(all);
